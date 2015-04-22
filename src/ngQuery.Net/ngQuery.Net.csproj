@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -39,7 +42,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="JsonParsing\DefaultRuleExpressionFactory.cs" />
+    <Compile Include="IExpressionParser.cs" />
+    <Compile Include="Models\IRule.cs" />
+    <Compile Include="Models\IRuleExpression.cs" />
+    <Compile Include="JsonParsing\IRuleExpressionFactory.cs" />
+    <Compile Include="Models\IRuleGroup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Models\Rule.cs" />
+    <Compile Include="JsonParsing\RuleExpressionConverter.cs" />
+    <Compile Include="Models\RuleGroup.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
