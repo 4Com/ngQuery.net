@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using ngQuery.Net.Models;
 using System.Linq;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace ngQuery.Net.ExpressionGeneration
 {
@@ -67,7 +68,7 @@ namespace ngQuery.Net.ExpressionGeneration
             {
                 var operand = _operatorParser.Parse(rule.SelectedOperator);
                 var property = Expression.PropertyOrField(entityExpression, rule.SelectedField);
-                var value = Expression.Constant(rule.SelectedEntry);
+                var value = Expression.Constant(Convert.ChangeType(rule.SelectedEntry, GetMemberType(property.Member)));
 
                 switch (operand)
                 {
@@ -75,6 +76,10 @@ namespace ngQuery.Net.ExpressionGeneration
                         return Expression.Equal(property, value);
                     case OperatorEnum.NotEquals:
                         return Expression.NotEqual(property, value);
+                    case OperatorEnum.GreaterThan:
+                        return Expression.GreaterThan(property, value);
+                    case OperatorEnum.GreaterThanOrEqualTo:
+                        return Expression.GreaterThanOrEqual(property, value);
                     default:
                         throw new NotSupportedException(String.Format("The operator '{0}' is not currently supported", rule.SelectedOperator));
                 }
@@ -103,6 +108,23 @@ namespace ngQuery.Net.ExpressionGeneration
             private BinaryExpression CombineExpressions(IEnumerable<BinaryExpression> expressions, Func<Expression, Expression, BinaryExpression> combiner)
             {
                 return expressions.Aggregate((left, right) => combiner(left, right));
+            }
+
+            private Type GetMemberType(MemberInfo member)
+            {
+                switch (member.MemberType)
+                {
+                    case MemberTypes.Event:
+                        return ((EventInfo)member).EventHandlerType;
+                    case MemberTypes.Field:
+                        return ((FieldInfo)member).FieldType;
+                    case MemberTypes.Method:
+                        return ((MethodInfo)member).ReturnType;
+                    case MemberTypes.Property:
+                        return ((PropertyInfo)member).PropertyType;
+                    default:
+                        throw new ArgumentException("Input MemberInfo must be if type EventInfo, FieldInfo, MethodInfo, or PropertyInfo");
+                }
             }
         }
     }

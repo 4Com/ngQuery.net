@@ -148,6 +148,52 @@ namespace ngQuery.Net.ExpressionGeneration.UnitTests
                 expression.Should().NotBeNull();
                 testList.AsQueryable().Where(expression).Should().HaveCount(2);
             }
+
+            [Test]
+            public void WhenPassedSimpleRuleUsingTheGreaterThanOperatorThenReturnsTwoElementsFromAList()
+            {
+                // Arrange
+                const string testJson = "{ selectedEntry: 2, selectedField: \"Property4\", selectedOperator: \"GreaterThan\" }";
+                var testList = new List<TestClass>
+                {
+                    new TestClass { Property4 = 1 },
+                    new TestClass { Property4 = 2 },
+                    new TestClass { Property4 = 3 },
+                    new TestClass { Property4 = 4 }
+                };
+                var ruleExpression = JsonConvert.DeserializeObject<IRuleExpression>(testJson, new RuleExpressionConverter());
+                var builder = new ExpressionBuilder();
+
+                // Act
+                var expression = builder.BuildExpression<TestClass>(ruleExpression);
+
+                // Assert
+                expression.Should().NotBeNull();
+                testList.AsQueryable().Where(expression).Should().HaveCount(2);
+            }
+
+            [Test]
+            public void WhenPassedSimpleRuleUsingTheGreaterThanOrEqualToOperatorThenReturnsTwoElementsFromAList()
+            {
+                // Arrange
+                const string testJson = "{ selectedEntry: 2, selectedField: \"Property4\", selectedOperator: \"GreaterThanOrEqualTo\" }";
+                var testList = new List<TestClass>
+                {
+                    new TestClass { Property4 = 1 },
+                    new TestClass { Property4 = 2 },
+                    new TestClass { Property4 = 3 },
+                    new TestClass { Property4 = 4 }
+                };
+                var ruleExpression = JsonConvert.DeserializeObject<IRuleExpression>(testJson, new RuleExpressionConverter());
+                var builder = new ExpressionBuilder();
+
+                // Act
+                var expression = builder.BuildExpression<TestClass>(ruleExpression);
+
+                // Assert
+                expression.Should().NotBeNull();
+                testList.AsQueryable().Where(expression).Should().HaveCount(3);
+            }
         }
     }
 }
