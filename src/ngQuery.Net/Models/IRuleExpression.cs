@@ -1,6 +1,6 @@
 ﻿namespace ngQuery.Net.Models
 {
-    internal interface IRuleExpression
+    public interface IRuleExpression
     {
     }
 }

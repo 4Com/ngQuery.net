@@ -1,6 +1,6 @@
 ﻿namespace ngQuery.Net.Models
 {
-    internal interface IRule : IRuleExpression
+    public interface IRule : IRuleExpression
     {
         string SelectedEntry { get; set; }
         string SelectedField { get; set; }

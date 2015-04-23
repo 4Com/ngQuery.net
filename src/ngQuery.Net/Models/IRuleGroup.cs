@@ -2,7 +2,7 @@
 
 namespace ngQuery.Net.Models
 {
-    internal interface IRuleGroup : IRuleExpression
+    public interface IRuleGroup : IRuleExpression
     {
         string SelectedTopOperator { get; set; }
         IList<IRuleExpression> List { get; }

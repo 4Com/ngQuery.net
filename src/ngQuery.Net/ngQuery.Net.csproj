@@ -45,6 +45,7 @@
     <Compile Include="ExpressionGeneration\ExpressionBuilder.cs" />
     <Compile Include="ExpressionGeneration\IExpressionBuilder.cs" />
     <Compile Include="ExpressionGeneration\IOperatorParser.cs" />
+    <Compile Include="ExpressionParser.cs" />
     <Compile Include="JsonParsing\DefaultRuleExpressionFactory.cs" />
     <Compile Include="IExpressionParser.cs" />
     <Compile Include="Models\IRule.cs" />

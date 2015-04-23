@@ -1,39 +1,50 @@
 ﻿using FluentAssertions;
-using Newtonsoft.Json;
-using ngQuery.Net.JsonParsing;
 using ngQuery.Net.Models;
-using ngQuery.Net.UnitTests;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ngQuery.Net.ExpressionGeneration.UnitTests
+namespace ngQuery.Net.UnitTests
 {
     [TestFixture]
-    public class ExpressionBuilderTests
-    {
+    public class ExpressionParserTests
+    { 
         public class Constructor
         {
             [Test]
-            public void DefaultShouldNotThrowAnyException()
+            public void WhenCalledThenDoNotThrowException()
             {
-                Action act = () => new ExpressionBuilder();
+                Action act = () => new ExpressionParser();
 
                 act.ShouldNotThrow();
             }
+        }
 
-            [Test]
-            public void WhenOperatorParserIsNullThrowsArgumentNullException()
+        public class GenerateExpression
+        {
+            [TestCase(null)]
+            [TestCase("")]
+            [TestCase("  ")]
+            public void WhenJsonIsNullOrWhitespaceThenThrowArgumentNullException(string param)
             {
-                Action act = () => new ExpressionBuilder(null);
+                var parser = new ExpressionParser();
+
+                Action act = () => parser.GenerateExpression<TestClass>(param);
 
                 act.ShouldThrow<ArgumentNullException>();
             }
-        }
 
-        public class BuildExpression
-        {
+            [Test]
+            public void WhenRuleExpressionIsNullThenThrowArgumentNullException()
+            {
+                var parser = new ExpressionParser();
+
+                Action act = () => parser.GenerateExpression<TestClass>(default(IRuleExpression));
+
+                act.ShouldThrow<ArgumentNullException>();
+            }
+
             [Test]
             public void WhenPassedSimpleEqualsRuleThenReturnsASingleElementFromAList()
             {
@@ -46,11 +57,10 @@ namespace ngQuery.Net.ExpressionGeneration.UnitTests
                     new TestClass { Property1 = "3", Property2 = "4", Property3 = "5" },
                     new TestClass { Property1 = "4", Property2 = "4", Property3 = "4" }
                 };
-                var ruleExpression = JsonConvert.DeserializeObject<IRuleExpression>(testJson, new RuleExpressionConverter());
-                var builder = new ExpressionBuilder();
+                var parser = new ExpressionParser();
 
                 // Act
-                var expression = builder.BuildExpression<TestClass>(ruleExpression);
+                var expression = parser.GenerateExpression<TestClass>(testJson);
 
                 // Assert
                 expression.Should().NotBeNull();
@@ -69,11 +79,10 @@ namespace ngQuery.Net.ExpressionGeneration.UnitTests
                     new TestClass { Property1 = "3", Property2 = "4", Property3 = "5" },
                     new TestClass { Property1 = "4", Property2 = "4", Property3 = "4" }
                 };
-                var ruleExpression = JsonConvert.DeserializeObject<IRuleExpression>(testJson, new RuleExpressionConverter());
-                var builder = new ExpressionBuilder();
+                var parser = new ExpressionParser();
 
                 // Act
-                var expression = builder.BuildExpression<TestClass>(ruleExpression);
+                var expression = parser.GenerateExpression<TestClass>(testJson);
 
                 // Assert
                 expression.Should().NotBeNull();
@@ -92,11 +101,10 @@ namespace ngQuery.Net.ExpressionGeneration.UnitTests
                     new TestClass { Property1 = "3", Property2 = "4", Property3 = "5" },
                     new TestClass { Property1 = "4", Property2 = "4", Property3 = "4" }
                 };
-                var ruleExpression = JsonConvert.DeserializeObject<IRuleExpression>(testJson, new RuleExpressionConverter());
-                var builder = new ExpressionBuilder();
+                var parser = new ExpressionParser();
 
                 // Act
-                var expression = builder.BuildExpression<TestClass>(ruleExpression);
+                var expression = parser.GenerateExpression<TestClass>(testJson);
 
                 // Assert
                 expression.Should().NotBeNull();
@@ -115,11 +123,10 @@ namespace ngQuery.Net.ExpressionGeneration.UnitTests
                     new TestClass { Property1 = "3", Property2 = "4", Property3 = "5" },
                     new TestClass { Property1 = "4", Property2 = "4", Property3 = "4" }
                 };
-                var ruleExpression = JsonConvert.DeserializeObject<IRuleExpression>(testJson, new RuleExpressionConverter());
-                var builder = new ExpressionBuilder();
+                var parser = new ExpressionParser();
 
                 // Act
-                var expression = builder.BuildExpression<TestClass>(ruleExpression);
+                var expression = parser.GenerateExpression<TestClass>(testJson);
 
                 // Assert
                 expression.Should().NotBeNull();
@@ -138,11 +145,10 @@ namespace ngQuery.Net.ExpressionGeneration.UnitTests
                     new TestClass { Property1 = "3", Property2 = "4", Property3 = "5" },
                     new TestClass { Property1 = "4", Property2 = "4", Property3 = "4" }
                 };
-                var ruleExpression = JsonConvert.DeserializeObject<IRuleExpression>(testJson, new RuleExpressionConverter());
-                var builder = new ExpressionBuilder();
+                var parser = new ExpressionParser();
 
                 // Act
-                var expression = builder.BuildExpression<TestClass>(ruleExpression);
+                var expression = parser.GenerateExpression<TestClass>(testJson);
 
                 // Assert
                 expression.Should().NotBeNull();
