@@ -80,6 +80,10 @@ namespace ngQuery.Net.ExpressionGeneration
                         return Expression.GreaterThan(property, value);
                     case OperatorEnum.GreaterThanOrEqualTo:
                         return Expression.GreaterThanOrEqual(property, value);
+                    case OperatorEnum.LessThan:
+                        return Expression.LessThan(property, value);
+                    case OperatorEnum.LessThanOrEqualTo:
+                        return Expression.LessThanOrEqual(property, value);
                     default:
                         throw new NotSupportedException(String.Format("The operator '{0}' is not currently supported", rule.SelectedOperator));
                 }
