@@ -4,6 +4,7 @@ using ngQuery.Net.Models;
 using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Collections;
 
 namespace ngQuery.Net.ExpressionGeneration
 {
@@ -38,6 +39,9 @@ namespace ngQuery.Net.ExpressionGeneration
 
         private class Builder
         {
+            private static Type ObjectType = typeof(object);
+            private const string EnumerableMethodName = "Any";
+            private const string ObjectMethodName = "Equals";
             private readonly IOperatorParser _operatorParser;
 
             internal Builder(IOperatorParser operatorParser)
@@ -68,25 +72,44 @@ namespace ngQuery.Net.ExpressionGeneration
             {
                 var operand = _operatorParser.Parse(rule.SelectedOperator);
                 var property = Expression.PropertyOrField(entityExpression, rule.SelectedField);
-                var value = Expression.Constant(Convert.ChangeType(rule.SelectedEntry, GetMemberType(property.Member)));
+                var propertyType = GetMemberType(property.Member);
 
-                switch (operand)
+                if (!(operand == OperatorEnum.In || operand == OperatorEnum.NotIn))
                 {
-                    case OperatorEnum.Equals:
-                        return Expression.Equal(property, value);
-                    case OperatorEnum.NotEquals:
-                        return Expression.NotEqual(property, value);
-                    case OperatorEnum.GreaterThan:
-                        return Expression.GreaterThan(property, value);
-                    case OperatorEnum.GreaterThanOrEqualTo:
-                        return Expression.GreaterThanOrEqual(property, value);
-                    case OperatorEnum.LessThan:
-                        return Expression.LessThan(property, value);
-                    case OperatorEnum.LessThanOrEqualTo:
-                        return Expression.LessThanOrEqual(property, value);
-                    default:
-                        throw new NotSupportedException(String.Format("The operator '{0}' is not currently supported", rule.SelectedOperator));
+                    var value = Expression.Constant(Convert.ChangeType(rule.SelectedEntry, propertyType));
+
+                    switch (operand)
+                    {
+                        case OperatorEnum.Equals:
+                            return Expression.Equal(property, value);
+                        case OperatorEnum.NotEquals:
+                            return Expression.NotEqual(property, value);
+                        case OperatorEnum.GreaterThan:
+                            return Expression.GreaterThan(property, value);
+                        case OperatorEnum.GreaterThanOrEqualTo:
+                            return Expression.GreaterThanOrEqual(property, value);
+                        case OperatorEnum.LessThan:
+                            return Expression.LessThan(property, value);
+                        case OperatorEnum.LessThanOrEqualTo:
+                            return Expression.LessThanOrEqual(property, value);
+                        default:
+                            throw new NotSupportedException(String.Format("The operator '{0}' is not currently supported", rule.SelectedOperator));
+                    }
                 }
+
+                if (typeof(IEnumerable).IsAssignableFrom(propertyType))
+                    throw new NotSupportedException("Enumerable to Enumerable matching is not supported.");
+
+                var splitValues = rule.SelectedEntry.Split(',').Select(str => Convert.ChangeType(str.Trim(), propertyType)).ToArray();
+                var compareTheResultOfAnyTo = Expression.Constant(operand == OperatorEnum.In ? true : false);
+                var anyMethodDefinition = typeof(Enumerable).GetMethods().Where(mi => mi.Name == EnumerableMethodName && mi.GetParameters().Count() == 2).First().MakeGenericMethod(new[] { ObjectType });
+                var objectEqualsMethodDefinition = ObjectType.GetMethods().Where(mi => mi.Name == ObjectMethodName && mi.GetParameters().Count() == 2).First();
+                var parameterTypeExpression = Expression.Parameter(ObjectType);
+                var anyMethodCallExpression = Expression.Call(anyMethodDefinition, new Expression[] {
+                                                        Expression.Constant(splitValues),
+                                                        Expression.Lambda(Expression.Call(objectEqualsMethodDefinition, parameterTypeExpression, Expression.Convert(property, ObjectType)), parameterTypeExpression)
+                                                 });
+                return Expression.Equal(anyMethodCallExpression, compareTheResultOfAnyTo);
             }
 
             private BinaryExpression BuildRuleGroup(IRuleGroup group, ParameterExpression entityExpression)
