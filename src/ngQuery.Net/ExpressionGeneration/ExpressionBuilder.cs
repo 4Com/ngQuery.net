@@ -40,6 +40,8 @@ namespace ngQuery.Net.ExpressionGeneration
         private class Builder
         {
             private static Type ObjectType = typeof(object);
+            private static MethodInfo _anyMethodDefinition = null;
+            private static MethodInfo _objectEqualsMethodDefinition = null;
             private const string EnumerableMethodName = "Any";
             private const string ObjectMethodName = "Equals";
             private readonly IOperatorParser _operatorParser;
@@ -102,12 +104,16 @@ namespace ngQuery.Net.ExpressionGeneration
 
                 var splitValues = rule.SelectedEntry.Split(',').Select(str => Convert.ChangeType(str.Trim(), propertyType)).ToArray();
                 var compareTheResultOfAnyTo = Expression.Constant(operand == OperatorEnum.In ? true : false);
-                var anyMethodDefinition = typeof(Enumerable).GetMethods().Where(mi => mi.Name == EnumerableMethodName && mi.GetParameters().Count() == 2).First().MakeGenericMethod(new[] { ObjectType });
-                var objectEqualsMethodDefinition = ObjectType.GetMethods().Where(mi => mi.Name == ObjectMethodName && mi.GetParameters().Count() == 2).First();
+                if (_anyMethodDefinition == null)
+                {
+                    _anyMethodDefinition = typeof(Enumerable).GetMethods().Where(mi => mi.Name == EnumerableMethodName && mi.GetParameters().Count() == 2).First().MakeGenericMethod(new[] { ObjectType });
+                    _objectEqualsMethodDefinition = ObjectType.GetMethods().Where(mi => mi.Name == ObjectMethodName && mi.GetParameters().Count() == 2).First();
+                }
+                
                 var parameterTypeExpression = Expression.Parameter(ObjectType);
-                var anyMethodCallExpression = Expression.Call(anyMethodDefinition, new Expression[] {
+                var anyMethodCallExpression = Expression.Call(_anyMethodDefinition, new Expression[] {
                                                         Expression.Constant(splitValues),
-                                                        Expression.Lambda(Expression.Call(objectEqualsMethodDefinition, parameterTypeExpression, Expression.Convert(property, ObjectType)), parameterTypeExpression)
+                                                        Expression.Lambda(Expression.Call(_objectEqualsMethodDefinition, parameterTypeExpression, Expression.Convert(property, ObjectType)), parameterTypeExpression)
                                                  });
                 return Expression.Equal(anyMethodCallExpression, compareTheResultOfAnyTo);
             }
