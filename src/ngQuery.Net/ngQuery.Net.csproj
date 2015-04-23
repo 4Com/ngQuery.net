@@ -54,10 +54,13 @@
     <Compile Include="Models\IRuleGroup.cs" />
     <Compile Include="Models\OperatorEnum.cs" />
     <Compile Include="ExpressionGeneration\OperatorParser.cs" />
+    <Compile Include="Models\ValidOperatorsResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\Rule.cs" />
     <Compile Include="JsonParsing\RuleExpressionConverter.cs" />
     <Compile Include="Models\RuleGroup.cs" />
+    <Compile Include="TopLevelOperatorAttribute.cs" />
+    <Compile Include="ValidOperators.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
