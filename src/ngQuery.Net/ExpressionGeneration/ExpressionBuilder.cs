@@ -67,13 +67,14 @@ namespace ngQuery.Net.ExpressionGeneration
             {
                 var operand = _operatorParser.Parse(rule.SelectedOperator);
                 var property = Expression.PropertyOrField(entityExpression, rule.SelectedField);
+                var value = Expression.Constant(rule.SelectedEntry);
 
                 switch (operand)
                 {
                     case OperatorEnum.Equals:
-                        return Expression.Equal(property, Expression.Constant(rule.SelectedEntry));
+                        return Expression.Equal(property, value);
                     case OperatorEnum.NotEquals:
-                        return Expression.NotEqual(property, Expression.Constant(rule.SelectedEntry));
+                        return Expression.NotEqual(property, value);
                     default:
                         throw new NotSupportedException(String.Format("The operator '{0}' is not currently supported", rule.SelectedOperator));
                 }
