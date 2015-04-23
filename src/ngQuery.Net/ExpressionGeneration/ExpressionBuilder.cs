@@ -2,6 +2,7 @@
 using System.Linq.Expressions;
 using ngQuery.Net.Models;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace ngQuery.Net.ExpressionGeneration
 {
@@ -45,11 +46,21 @@ namespace ngQuery.Net.ExpressionGeneration
 
             public BinaryExpression Build(IRuleExpression ruleExpression, ParameterExpression entityExpression)
             {
+                if (ruleExpression == null)
+                    throw new ArgumentNullException(nameof(ruleExpression));
+
+                if (entityExpression == null)
+                    throw new ArgumentNullException(nameof(entityExpression));
+
                 var rule = ruleExpression as IRule;
                 if (rule != null)
                     return BuildRule(rule, entityExpression);
 
-                return BuildRuleGroup(ruleExpression as IRuleGroup, entityExpression);
+                var group = ruleExpression as IRuleGroup;
+                if (group != null)
+                    return BuildRuleGroup(group, entityExpression);
+
+                throw new NotSupportedException(string.Format("The type of IRuleExpression '{0}' is not supported by this builder.", ruleExpression.GetType().Name));
             }
 
             private BinaryExpression BuildRule(IRule rule, ParameterExpression entityExpression)
@@ -70,28 +81,27 @@ namespace ngQuery.Net.ExpressionGeneration
 
             private BinaryExpression BuildRuleGroup(IRuleGroup group, ParameterExpression entityExpression)
             {
+                if(group.List.Count == 0)
+                    return Expression.OrElse(Expression.Constant(true), Expression.Constant(true));
+
                 var groupExpressions = group.List.Select(r => Build(r, entityExpression)).ToList();
                 var operand = _operatorParser.Parse(group.SelectedTopOperator);
 
                 if (operand == OperatorEnum.And)
                 {
-                    return groupExpressions.Aggregate((left, right) => Expression.AndAlso(left, right));
+                    return CombineExpressions(groupExpressions, Expression.AndAlso);
                 }
                 else if (operand == OperatorEnum.Or)
                 {
-                    BinaryExpression binaryExpression = null;
-                    for (var current = 0; (current + 1) < groupExpressions.Count; current++)
-                    {
-                        var next = current + 1;
-                        var thisExpression = Expression.OrElse(groupExpressions[current], groupExpressions[next]);
-
-                        binaryExpression = (binaryExpression == null) ? thisExpression : Expression.OrElse(binaryExpression, thisExpression);
-                    }
-
-                    return binaryExpression ?? Expression.OrElse(Expression.Constant(true), Expression.Constant(true));
+                    return CombineExpressions(groupExpressions, Expression.OrElse);
                 }
 
                 throw new NotSupportedException("Only the following operators are supported: And, Or");
+            }
+
+            private BinaryExpression CombineExpressions(IEnumerable<BinaryExpression> expressions, Func<Expression, Expression, BinaryExpression> combiner)
+            {
+                return expressions.Aggregate((left, right) => combiner(left, right));
             }
         }
     }
