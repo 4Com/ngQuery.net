@@ -7,10 +7,5 @@
         public string Type { get; set; }
         public string[] ValidEntries { get; set; }
         public Operator[] ValidOperators { get; set; }
-
-        public Identifier()
-        {
-            ValidEntries = new string[0];
-        }
     }
 }

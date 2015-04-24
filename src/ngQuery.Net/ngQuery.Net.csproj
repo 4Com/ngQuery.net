@@ -42,11 +42,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DefaultValidEntriesGenerator.cs" />
     <Compile Include="ExpressionGeneration\ExpressionBuilder.cs" />
     <Compile Include="ExpressionGeneration\IExpressionBuilder.cs" />
     <Compile Include="ExpressionGeneration\IOperatorParser.cs" />
     <Compile Include="ExpressionParser.cs" />
     <Compile Include="IQueryOptionsBuilder.cs" />
+    <Compile Include="IValidEntriesGenerator.cs" />
     <Compile Include="JsonParsing\DefaultRuleExpressionFactory.cs" />
     <Compile Include="IExpressionParser.cs" />
     <Compile Include="Models\Identifier.cs" />
