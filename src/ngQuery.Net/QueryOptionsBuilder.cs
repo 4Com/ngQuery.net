@@ -16,6 +16,9 @@ namespace ngQuery.Net
 
         internal QueryOptionsBuilder(IOperatorParser operatorParser)
         {
+            if (operatorParser == null)
+                throw new ArgumentNullException(nameof(operatorParser));
+
             _operatorParser = operatorParser;
         }
 
@@ -44,6 +47,10 @@ namespace ngQuery.Net
 
         private string FindFriendlyType(Type propertyType)
         {
+            if(propertyType == null)
+                throw new ArgumentNullException(nameof(propertyType));
+
+
             if (propertyType == typeof(DateTime))
             {
                 return "date";
@@ -59,6 +66,9 @@ namespace ngQuery.Net
 
         private string FindDisplayName(PropertyInfo property)
         {
+            if (property == null)
+                throw new ArgumentNullException(nameof(property));
+
             var attribute = property.GetCustomAttribute<DescriptionAttribute>();
             if (attribute != null)
             {

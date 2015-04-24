@@ -9,6 +9,9 @@ namespace ngQuery.Net
     {
         internal static bool CheckThatTypeSupportsOperator(Type memberType, OperatorEnum operation)
         {
+            if (memberType == null)
+                throw new ArgumentNullException(nameof(memberType));
+
             string methodName;
 
             switch (operation)
@@ -47,6 +50,9 @@ namespace ngQuery.Net
 
         internal static bool IsNumericType(Type memberType)
         {
+            if (memberType == null)
+                throw new ArgumentNullException(nameof(memberType));
+
             return numericTypes.Any(x => x == memberType);
         }
 
