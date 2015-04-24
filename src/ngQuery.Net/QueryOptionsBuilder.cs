@@ -16,6 +16,8 @@ namespace ngQuery.Net
 
         public QueryOptionsBuilder() : this(new OperatorParser(), new DefaultValidEntriesGenerator()) { }
 
+        public QueryOptionsBuilder(IValidEntriesGenerator validEntriesGenerator) : this(new OperatorParser(), validEntriesGenerator) { }
+
         internal QueryOptionsBuilder(IOperatorParser operatorParser, IValidEntriesGenerator validEntriesGenerator)
         {
             if (operatorParser == null)
