@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using ngQuery.Net.ExpressionGeneration;
 using ngQuery.Net.Models;
 using System;
@@ -42,12 +43,15 @@ namespace ngQuery.Net
                 }).ToArray()
             };
 
-            return JsonConvert.SerializeObject(result);
+            return JsonConvert.SerializeObject(result, new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            });
         }
 
         private string FindFriendlyType(Type propertyType)
         {
-            if(propertyType == null)
+            if (propertyType == null)
                 throw new ArgumentNullException(nameof(propertyType));
 
 
