@@ -76,7 +76,8 @@ namespace ngQuery.Net.ExpressionGeneration
                 var property = Expression.PropertyOrField(entityExpression, rule.SelectedField);
                 var propertyType = GetMemberType(property.Member);
 
-                CheckThatTypeSupportsOperator(propertyType, operand);
+                if(!TypeHelpers.CheckThatTypeSupportsOperator(propertyType, operand))
+                    throw new Exception(string.Format("The operator '{0}' is not support by the type '{1}'.", operand.ToString(), propertyType));
 
                 if (!(operand == OperatorEnum.In || operand == OperatorEnum.NotIn))
                 {
@@ -161,44 +162,6 @@ namespace ngQuery.Net.ExpressionGeneration
                         throw new ArgumentException("Input MemberInfo must be if type EventInfo, FieldInfo, MethodInfo, or PropertyInfo");
                 }
             }
-
-            private void CheckThatTypeSupportsOperator(Type memberType, OperatorEnum operation)
-            {
-                string methodName;
-
-                switch (operation)
-                {
-                    case OperatorEnum.Equals:
-                    case OperatorEnum.NotEquals:
-                    case OperatorEnum.In:
-                    case OperatorEnum.NotIn:
-                        return;
-
-                    case OperatorEnum.GreaterThan:
-                        if (numericTypes.Any(type => type == memberType)) return;
-                        methodName = "op_GreaterThan";
-                        break;
-                    case OperatorEnum.GreaterThanOrEqualTo:
-                        if (numericTypes.Any(type => type == memberType)) return;
-                        methodName = "op_GreaterThanOrEqual";
-                        break;
-                    case OperatorEnum.LessThan:
-                        if (numericTypes.Any(type => type == memberType)) return;
-                        methodName = "op_LessThan";
-                        break;
-                    case OperatorEnum.LessThanOrEqualTo:
-                        if (numericTypes.Any(type => type == memberType)) return;
-                        methodName = "op_LessThanOrEqual";
-                        break;
-                    default:
-                        throw new Exception(string.Format("Unsupported operator value '{0}'.", (int)operation));
-                }
-
-                if(memberType.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public) == null)
-                        throw new Exception(string.Format("The operator '{0}' is not support by the type '{1}'.", operation.ToString(), memberType));
-            }
-
-            private static Type[] numericTypes = { typeof(double), typeof(decimal), typeof(short), typeof(ushort), typeof(int), typeof(uint), typeof(long), typeof(ulong) };
         }
     }
 }
