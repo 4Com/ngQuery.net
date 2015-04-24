@@ -5,6 +5,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Collections;
+using System.Globalization;
 
 namespace ngQuery.Net.ExpressionGeneration
 {
@@ -81,7 +82,9 @@ namespace ngQuery.Net.ExpressionGeneration
 
                 if (!(operand == OperatorEnum.In || operand == OperatorEnum.NotIn))
                 {
-                    var value = Expression.Constant(Convert.ChangeType(rule.SelectedEntry, propertyType));
+                    var value = Expression.Constant(propertyType == typeof(DateTime) ?
+                                                        DateTime.Parse(rule.SelectedEntry, CultureInfo.InvariantCulture) : 
+                                                        Convert.ChangeType(rule.SelectedEntry, propertyType));
 
                     switch (operand)
                     {

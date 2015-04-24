@@ -286,6 +286,52 @@ namespace ngQuery.Net.ExpressionGeneration.UnitTests
                 expression.Should().NotBeNull();
                 testList.AsQueryable().Where(expression).Should().HaveCount(1);
             }
+
+            [Test]
+            public void WhenPassedSimpleRuleUsingTheGreaterThanOperatorWithTheSelectedPropertyBeingADateTimeTypeThenReturnsTwoElementsFromAList()
+            {
+                // Arrange
+                var testJson = "{ selectedEntry: \"" + DateTime.UtcNow.ToString("o") + "\", selectedField: \"Property5\", selectedOperator: \"GreaterThan\" }";
+                var testList = new List<TestClass>
+                {
+                    new TestClass { Property5 = DateTime.UtcNow.AddHours(-2) },
+                    new TestClass { Property5 = DateTime.UtcNow.AddHours(-1) },
+                    new TestClass { Property5 = DateTime.UtcNow.AddHours(1) },
+                    new TestClass { Property5 = DateTime.UtcNow.AddHours(2) }
+                };
+                var ruleExpression = JsonConvert.DeserializeObject<IRuleExpression>(testJson, new RuleExpressionConverter());
+                var builder = new ExpressionBuilder();
+
+                // Act
+                var expression = builder.BuildExpression<TestClass>(ruleExpression);
+
+                // Assert
+                expression.Should().NotBeNull();
+                testList.AsQueryable().Where(expression).Should().HaveCount(2);
+            }
+
+            [Test]
+            public void WhenPassedSimpleRuleUsingTheLessThanOperatorWithTheSelectedPropertyBeingADateTimeTypeThenReturnsTwoElementsFromAList()
+            {
+                // Arrange
+                var testJson = "{ selectedEntry: \"" + DateTime.UtcNow.ToString("o") + "\", selectedField: \"Property5\", selectedOperator: \"LessThan\" }";
+                var testList = new List<TestClass>
+                {
+                    new TestClass { Property5 = DateTime.UtcNow.AddHours(-2) },
+                    new TestClass { Property5 = DateTime.UtcNow.AddHours(-1) },
+                    new TestClass { Property5 = DateTime.UtcNow.AddHours(1) },
+                    new TestClass { Property5 = DateTime.UtcNow.AddHours(2) }
+                };
+                var ruleExpression = JsonConvert.DeserializeObject<IRuleExpression>(testJson, new RuleExpressionConverter());
+                var builder = new ExpressionBuilder();
+
+                // Act
+                var expression = builder.BuildExpression<TestClass>(ruleExpression);
+
+                // Assert
+                expression.Should().NotBeNull();
+                testList.AsQueryable().Where(expression).Should().HaveCount(2);
+            }
         }
     }
 }
