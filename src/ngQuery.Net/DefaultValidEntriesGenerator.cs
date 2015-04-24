@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace ngQuery.Net
 {
-    public class DefaultValidEntriesGenerator : IValidEntriesGenerator
+    public sealed class DefaultValidEntriesGenerator : IValidEntriesGenerator
     {
         public string[] Generate(Type entityType, PropertyInfo property)
         {

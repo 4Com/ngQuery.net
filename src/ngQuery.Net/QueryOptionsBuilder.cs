@@ -9,7 +9,7 @@ using System.Reflection;
 
 namespace ngQuery.Net
 {
-    public class QueryOptionsBuilder : IQueryOptionsBuilder
+    public sealed class QueryOptionsBuilder : IQueryOptionsBuilder
     {
         private readonly IOperatorParser _operatorParser;
         private readonly IValidEntriesGenerator _validEntriesGenerator;
