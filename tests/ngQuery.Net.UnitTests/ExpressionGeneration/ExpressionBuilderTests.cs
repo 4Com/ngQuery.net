@@ -81,6 +81,49 @@ namespace ngQuery.Net.ExpressionGeneration.UnitTests
             }
 
             [Test]
+            public void WhenPassedSimpleEqualsRuleWithTheSelectedPropertyBeingABooleanTypeThenReturnsASingleElementFromAList()
+            {
+                // Arrange
+                const string testJson = "{ selectedEntry: true, selectedField: \"Property6\", selectedOperator: \"Equals\" }";
+                var testList = new List<TestClass>
+                {
+                    new TestClass { Property6 = true},
+                    new TestClass { Property6 = false}
+                };
+                var ruleExpression = JsonConvert.DeserializeObject<IRuleExpression>(testJson, new RuleExpressionConverter());
+                var builder = new ExpressionBuilder();
+
+                // Act
+                var expression = builder.BuildExpression<TestClass>(ruleExpression);
+
+                // Assert
+                expression.Should().NotBeNull();
+                testList.AsQueryable().Where(expression).Should().HaveCount(1);
+            }
+
+            [Test]
+            public void WhenPassedSimpleEqualsRuleWithTheSelectedPropertyBeingABooleanTypeThenExpressionIsGeneratedAndReturnsTwoElementsFromAList()
+            {
+                // Arrange
+                const string testJson = "{ selectedEntry: true, selectedField: \"Property6\", selectedOperator: \"Equals\" }";
+                var testList = new List<TestClass>
+                {
+                    new TestClass { Property6 = true},
+                    new TestClass { Property6 = true},
+                    new TestClass { Property6 = false}
+                };
+                var ruleExpression = JsonConvert.DeserializeObject<IRuleExpression>(testJson, new RuleExpressionConverter());
+                var builder = new ExpressionBuilder();
+
+                // Act
+                var expression = builder.BuildExpression<TestClass>(ruleExpression);
+
+                // Assert
+                expression.Should().NotBeNull();
+                testList.AsQueryable().Where(expression).Should().HaveCount(2);
+            }
+
+            [Test]
             public void WhenPassedSimpleNotEqualsRuleThenReturnsThreeElementsFromAList()
             {
                 // Arrange

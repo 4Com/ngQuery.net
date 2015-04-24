@@ -9,5 +9,6 @@ namespace ngQuery.Net.UnitTests
         public string Property3 { get; set; }
         public int Property4 { get; set; }
         public DateTime Property5 { get; set; }
+        public bool Property6 { get; set; }
     }
 }
