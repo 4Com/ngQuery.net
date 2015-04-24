@@ -34,10 +34,11 @@ namespace ngQuery.Net
             var result = new QueryOptions
             {
                 TopLevelOperators = topLevelOperators.Select(op => new Operator { DisplayText = op.Display, SystemIdentifier = op.Name }).ToArray(),
-                Identifiers = type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Select(prop => new Identifier
+                Fields = type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Select(prop => new Identifier
                 {
                     Type = FindFriendlyType(prop.PropertyType),
                     Display = FindDisplayName(prop),
+                    SystemIdentifier = prop.Name,
                     ValidOperators = fieldLevelOperators.Where(op => TypeHelpers.CheckThatTypeSupportsOperator(prop.PropertyType, _operatorParser.Parse(op.Name)))
                                                         .Select(op => new Operator { DisplayText = op.Display, SystemIdentifier = op.Name }).ToArray()
                 }).ToArray()
