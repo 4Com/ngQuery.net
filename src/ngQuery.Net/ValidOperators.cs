@@ -6,9 +6,9 @@ using System.Reflection;
 
 namespace ngQuery.Net
 {
-    public sealed class ValidOperators
+    internal sealed class ValidOperators
     {
-        public IEnumerable<ValidOperatorsResult> GetValid()
+        internal IEnumerable<ValidOperatorsResult> GetValid()
         {
             var members = typeof(OperatorEnum).GetMembers(BindingFlags.Static | BindingFlags.Public);
             foreach (var memberInfo in members)
