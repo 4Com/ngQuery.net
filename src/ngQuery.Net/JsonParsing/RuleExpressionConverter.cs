@@ -8,6 +8,11 @@ namespace ngQuery.Net.JsonParsing
 {
     internal class RuleExpressionConverter : JsonConverter
     {
+        private const string SelectedTopLevelOperatorJsonPropertyName = "selectedTopLevelOperator";
+        private const string ListJsonPropertyName = "list";
+        private const string SelectedEntryJsonPropertyName = "selectedEntry";
+        private const string SelectedFieldJsonPropertyName = "selectedField";
+        private const string SelectedOperatorJsonPropertyName = "selectedOperator";
         private readonly IRuleExpressionFactory _ruleExpressionFactory;
 
         internal RuleExpressionConverter() : this(new DefaultRuleExpressionFactory()) { }
@@ -46,7 +51,7 @@ namespace ngQuery.Net.JsonParsing
         private IRuleExpression ParseObject(JObject value, JsonSerializer serializer)
         {
             var rootProperties = value.Properties().ToArray();
-            if(rootProperties.Any(x => x.Name == "selectedTopLevelOperator"))
+            if(rootProperties.Any(x => x.Name == SelectedTopLevelOperatorJsonPropertyName))
             {
                 return ParseRuleGroup(value, serializer);
             }
@@ -57,9 +62,9 @@ namespace ngQuery.Net.JsonParsing
         {
             var group = _ruleExpressionFactory.CreateRuleGroup();
 
-            group.SelectedTopOperator = value["selectedTopLevelOperator"].Value<string>();
+            group.SelectedTopOperator = value[SelectedTopLevelOperatorJsonPropertyName].Value<string>();
 
-            foreach(var token in value["list"].Value<JArray>().Values<JObject>())
+            foreach(var token in value[ListJsonPropertyName].Value<JArray>().Values<JObject>())
             {
                 group.List.Add(ParseObject(token, serializer));
             }
@@ -71,9 +76,9 @@ namespace ngQuery.Net.JsonParsing
         {
             var rule = _ruleExpressionFactory.CreateRule();
 
-            rule.SelectedEntry = value["selectedEntry"].Value<string>();
-            rule.SelectedField = value["selectedField"].Value<string>();
-            rule.SelectedOperator = value["selectedOperator"].Value<string>();
+            rule.SelectedEntry = value[SelectedEntryJsonPropertyName].Value<string>();
+            rule.SelectedField = value[SelectedFieldJsonPropertyName].Value<string>();
+            rule.SelectedOperator = value[SelectedOperatorJsonPropertyName].Value<string>();
 
             return rule;
         }
